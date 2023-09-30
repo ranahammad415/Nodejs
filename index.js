@@ -24,9 +24,7 @@ app.get('/scrape', async (req, res) => {
   try {
     const { hash } = req.query;
 
-    const browser = await puppeteer.launch({
-        headless: 'new',
-      });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
