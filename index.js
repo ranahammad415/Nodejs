@@ -2,7 +2,7 @@
 const express = require('express');
 
 const chromium = require('chrome-aws-lambda');
-
+const puppeteer = require('puppeteer-core');
 
 const app = express();
 const PORT = 4000;
@@ -25,21 +25,22 @@ app.get('/about', (req, res) => {
 app.get('/scrape', async (req, res) => {
   try {
     const { hash } = req.query;
+    let browser;
 
-    const browser = await chromium.puppeteer.launch({
-      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chromium.defaultViewport,
+
+    browser = await puppeteer.launch({
       executablePath: await chromium.executablePath,
-      headless: true,
-      ignoreHTTPSErrors: true,
-    })
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
     await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+hash);
 
   // Wait for the data to load (you might need to adjust the selector)
-  await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
+  // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
 
 
     // Your Puppeteer scraping logic goes here
