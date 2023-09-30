@@ -1,8 +1,8 @@
 
 const express = require('express');
 
-//const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
+//const puppeteer = require('puppeteer');
 
 const app = express();
 const PORT = 4000;
@@ -28,7 +28,7 @@ app.get('/scrape', async (req, res) => {
     let browser;
 
 
-    browser = await puppeteer.launch({
+    browser = await chromium.puppeteer.launch({
       executablePath: await chromium.executablePath,
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
@@ -40,9 +40,9 @@ app.get('/scrape', async (req, res) => {
     await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+hash);
 
   // Wait for the data to load (you might need to adjust the selector)
-  // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
+   await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
 
-
+/*
     // Your Puppeteer scraping logic goes here
     const data = await page.evaluate(() => {
       const data = document.querySelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)').innerText.split(":")[1];
@@ -74,11 +74,13 @@ app.get('/scrape', async (req, res) => {
      
      
       });
+*/
+result = await page.title();
 
     await browser.close();
 
     // Send the scraped data back
-    res.json({ success: true, data });
+    res.json({ success: true, result });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
