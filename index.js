@@ -24,9 +24,11 @@ app.get('/scrape', async (req, res) => {
   try {
     const { hash } = req.query;
 
-    const browser = await puppeteer.launch({
-        headless: 'new',
-      });
+    const browser = await puppeteer.launch({ 
+      executablePath: 'chrome.exe', 
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
