@@ -40,7 +40,7 @@ app.get('/scrape', async (req, res) => {
     await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+hash);
 
   // Wait for the data to load (you might need to adjust the selector)
-   await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
+  // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
 
 /*
     // Your Puppeteer scraping logic goes here
