@@ -28,7 +28,12 @@ app.get('/scrape', async (req, res) => {
     let browser;
 
 
-     browser = await puppeteer.launch({headless: 'false'});
+    browser = await puppeteer.launch({
+      executablePath: await chromium.executablePath,
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
