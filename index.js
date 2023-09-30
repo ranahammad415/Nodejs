@@ -29,10 +29,11 @@ app.get('/scrape', async (req, res) => {
 
 
     browser = await chromium.puppeteer.launch({
-      executablePath: await chromium.executablePath,
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
       headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
 
@@ -77,8 +78,9 @@ app.get('/scrape', async (req, res) => {
 */
 result = await page.title();
 
-    await browser.close();
-
+if (browser !== null) {
+  await browser.close();
+}
     // Send the scraped data back
     res.json({ success: true, result });
   } catch (error) {
