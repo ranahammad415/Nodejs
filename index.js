@@ -5,7 +5,7 @@ const chromium = require('chrome-aws-lambda');
 
 
 const app = express();
-const port = 4000;
+const PORT = 4000;
 
 app.use(express.json());
 
@@ -84,9 +84,7 @@ app.get('/scrape', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+
 
 // Export the Express API
 module.exports = app
