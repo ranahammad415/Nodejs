@@ -3,6 +3,8 @@ const express = require('express');
 
 const chromium = require('chrome-aws-lambda');
 //const puppeteer = require('puppeteer');
+const playwright = require('playwright-core');
+
 
 const app = express();
 const PORT = 4000;
@@ -25,10 +27,10 @@ app.get('/about', (req, res) => {
 app.get('/scrape', async (req, res) => {
   try {
 
-    let browser;
+   
 
 
-    browser = await chromium.puppeteer.launch({
+    const browser = await playwright.puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
