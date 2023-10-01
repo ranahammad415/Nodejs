@@ -27,7 +27,7 @@ app.get('/about', (req, res) => {
 app.get('/scrape', async (req, res) => {
 
   try {
-   const browser = await puppeteer.launch({headless:"new"});
+   const browser = await puppeteer.launch({ args: ['--no-sandbox'], headless:"new"});
 
     let page = await browser.newPage();
 
