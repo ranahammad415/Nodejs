@@ -24,7 +24,7 @@ app.get('/about', (req, res) => {
 
 app.get('/scrape', async (req, res) => {
   try {
-    const { hash } = req.query;
+
     let browser;
 
 
@@ -38,7 +38,7 @@ app.get('/scrape', async (req, res) => {
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
-    await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+hash);
+    await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+req.query.hash);
 
   // Wait for the data to load (you might need to adjust the selector)
   // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
