@@ -44,9 +44,7 @@ app.get('/scrape', async (req, res) => {
   } catch (error) {
     return callback(error);
   } finally {
-    if (browser !== null) {
-      await browser.close();
-    }
+
   }
 
 
