@@ -25,21 +25,33 @@ app.get('/about', (req, res) => {
 
 
 app.get('/scrape', async (req, res) => {
+
   try {
-
-   
-
-
-    const browser = await playwright.chromium.launch({
+    browser = await chromium.puppeteer.launch({
       args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
-    
-    const page = await browser.newPage();
+
+    let page = await browser.newPage();
+
+    await page.goto(event.url || 'https://finder.kujira.network/kaiyo-1/tx/'+req.query.hash);
+
+    result = await page.title();
+    res.json({ success: true, result });
+  } catch (error) {
+    return callback(error);
+  } finally {
+    if (browser !== null) {
+      await browser.close();
+    }
+  }
+
 
     // Modify the URL to include query parameters
-    await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+req.query.hash);
+    //await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+req.query.hash);
 
   // Wait for the data to load (you might need to adjust the selector)
   // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
@@ -77,17 +89,9 @@ app.get('/scrape', async (req, res) => {
      
       });
 */
-result = await page.title();
 
-if (browser !== null) {
-  await browser.close();
-}
     // Send the scraped data back
-    res.json({ success: true, result });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
+
 });
 
 
