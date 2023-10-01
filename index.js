@@ -30,13 +30,12 @@ app.get('/scrape', async (req, res) => {
    
 
 
-    const browser = await playwright.puppeteer.launch({
+    const browser = await playwright.chromium.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
-      ignoreHTTPSErrors: true,
     });
+    
     const page = await browser.newPage();
 
     // Modify the URL to include query parameters
