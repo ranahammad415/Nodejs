@@ -1,130 +1,42 @@
+const app = require("express")();
 
-const express = require('express');
+let chrome = {};
+let puppeteer;
 
-//const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer');
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  chrome = require("chrome-aws-lambda");
+  puppeteer = require("puppeteer-core");
+} else {
+  puppeteer = require("puppeteer");
+}
 
+app.get("/api", async (req, res) => {
+  let options = {};
 
-
-const app = express();
-const PORT = 4000;
-
-app.use(express.json());
-
-app.listen(PORT, () => {
-  console.log(`API listening on PORT ${PORT} `)
-})
-
-app.get('/', (req, res) => {
-  res.send('Hey this is my API running 🥳')
-})
-
-app.get('/about', (req, res) => {
-  res.send('This is my about route..... ')
-})
-
-
-app.get('/scrape', async (req, res) => {
-
-  try {
-   const browser = await puppeteer.launch({ args: ['--no-sandbox'], headless:"new"});
-
-    let page = await browser.newPage();
-
-    
-    
-    await page.goto('https://finder.kujira.network/kaiyo-1/tx/C6931037591FE1298C06B8E2DE7C69EBF47F861AC389CD18E222DDD8B5D265E4');
-
-  
-   // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
-
-    const data = await page.evaluate(() => {
-      const data = document.querySelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)').innerText.split(":")[1];
-
-      // Define a regular expression pattern to match numeric values and units
-      const regex = /(\d+)\n([A-Za-z0-9]+)/g;
-      
-      // Initialize an object to store the data
-      const dataArray = {};
-      
-      // Use a loop to iterate over matches found by the regular expression
-      let match;
-      while ((match = regex.exec(data)) !== null) {
-        const numericValue = match[1];
-        const unit = match[2];
-      
-        // Check if the unit already exists in the object
-        if (dataArray[unit]) {
-          // If it exists, push the new numeric value to the array
-          dataArray[unit].push(numericValue);
-        } else {
-          // If it doesn't exist, create a new array with the numeric value
-          dataArray[unit] = [numericValue];
-        }
-      }
-
-        return dataArray;
-     
-     
-     
-      });
-
-
-   // result = await page.title();
-    res.json({ success: true , data });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, error }); 
-  } finally {
-
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    options = {
+      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    };
   }
 
+  try {
+    let browser = await puppeteer.launch(options);
 
-    // Modify the URL to include query parameters
-    //await page.goto('https://finder.kujira.network/kaiyo-1/tx/'+req.query.hash);
-
-  // Wait for the data to load (you might need to adjust the selector)
-  // await page.waitForSelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)');
-
-/*
-    // Your Puppeteer scraping logic goes here
-    const data = await page.evaluate(() => {
-      const data = document.querySelector('#root > div > div.container.explore > div.md-row.pad-tight.wrap > div:nth-child(1) > div > table > tbody > tr:nth-child(6)').innerText.split(":")[1];
-
-      // Define a regular expression pattern to match numeric values and units
-      const regex = /(\d+)\n([A-Za-z0-9]+)/g;
-      
-      // Initialize an object to store the data
-      const dataArray = {};
-      
-      // Use a loop to iterate over matches found by the regular expression
-      let match;
-      while ((match = regex.exec(data)) !== null) {
-        const numericValue = match[1];
-        const unit = match[2];
-      
-        // Check if the unit already exists in the object
-        if (dataArray[unit]) {
-          // If it exists, push the new numeric value to the array
-          dataArray[unit].push(numericValue);
-        } else {
-          // If it doesn't exist, create a new array with the numeric value
-          dataArray[unit] = [numericValue];
-        }
-      }
-
-        return dataArray;
-     
-     
-     
-      });
-*/
-
-    // Send the scraped data back
-
+    let page = await browser.newPage();
+    await page.goto("https://www.google.com");
+    res.send(await page.title());
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 });
 
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server started");
+});
 
-
-// Export the Express API
-module.exports = app
+module.exports = app;
