@@ -4,7 +4,7 @@ let chrome = {};
 let puppeteer;
 
 if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  chrome = require("chrome-aws-lambda");
+  chromium  = require("@sparticuz/chromium-min");
   puppeteer = require("puppeteer-core");
 } else {
   puppeteer = require("puppeteer");
@@ -17,11 +17,20 @@ app.get("/", async (req, res) => {
 app.get("/api", async (req, res) => {
   let options = {};
 
+    // Optional: If you'd like to use the legacy headless mode. "new" is the default.
+    chromium.setHeadlessMode = true;
+
+    // Optional: If you'd like to disable webgl, true is the default.
+    chromium.setGraphicsMode = false;
+
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     options = {
-
-      headless: true,
-      ignoreHTTPSErrors: true,
+      args: process.env.IS_LOCAL ? puppeteer.defaultArgs() : chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: process.env.IS_LOCAL
+        ? "/tmp/localChromium/chromium/linux-1122391/chrome-linux/chrome"
+        : await chromium.executablePath(),
+      headless: process.env.IS_LOCAL ? false : chromium.headless,
     };
   }
 

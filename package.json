@@ -15,7 +15,9 @@
   "dependencies": {
     "chrome-aws-lambda": "^10.1.0",
     "express": "^4.18.2",
-    "puppeteer": "^21.3.6"
+    "puppeteer": "^21.3.6",
+    "@sparticuz/chromium-min": "^117.0.0",
+    "@puppeteer/browsers": "^1.7.1"
   },
   "devDependencies": {
     "puppeteer": "^16.2.0"
