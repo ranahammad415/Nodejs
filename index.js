@@ -42,7 +42,7 @@ app.get('/scrape', async (req, res) => {
     result = await page.title();
     res.json({ success: true, result });
   } catch (error) {
-    return callback(error);
+    res.json({ success: false, error }); 
   } finally {
 
   }
